@@ -74,6 +74,8 @@
         <button type="submit">Enviar</button>
     </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
     <script>
         const formulario = document.getElementById('formulario');
         const listaNotificaciones = document.getElementById('lista-notificaciones');
@@ -122,6 +124,41 @@
         }
 
         obtenerNotificaciones();
+
+        // WebSocket
+        const socket = io('http://localhost:3000');
+
+        socket.on('connect_error', (error) => {
+            alert('Error de conexión al servidor:', error.message);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: `No se pudo conectar al servidor: ${error.message}`,
+                position: 'top-end',
+                timer: 3000,
+                width: '240px',
+                showConfirmButton: false,
+            });
+        });
+
+        socket.on('conexionExitosa', (mensaje) => {
+            console.log('Notificación de conexión exitosa:', mensaje);
+
+            Swal.fire({
+                icon: 'info',
+                title: 'Nuevo Usuario 🎉',
+                text: mensaje,
+                position: 'top-end',
+                timer: 3000,
+                width: '240px',
+                showConfirmButton: false,
+            });
+        });
+
+        window.addEventListener('beforeunload', () => {
+            socket.disconnect();
+        });
     </script>
 </body>
 </html>
